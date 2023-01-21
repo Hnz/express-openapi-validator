@@ -14,16 +14,11 @@ export function defaultResolver(
   const pathKey = openApiRoute.substring(basePath.length);
   const schema = apiDoc.paths[pathKey][method.toLowerCase()];
   const oId = schema['x-eov-operation-id'] || schema['operationId'];
-  const baseName = schema['x-eov-operation-handler'];
+  const baseName = schema['x-eov-operation-handler'] || oId;
 
   const cacheKey = `${expressRoute}-${method}-${oId}-${baseName}`;
   if (cache[cacheKey]) return cache[cacheKey];
 
-  if (oId && !baseName) {
-    throw Error(
-      `found x-eov-operation-id for route ${method} - ${expressRoute}]. x-eov-operation-handler required.`,
-    );
-  }
   if (!oId && baseName) {
     throw Error(
       `found x-eov-operation-handler for route [${method} - ${expressRoute}]. operationId or x-eov-operation-id required.`,
